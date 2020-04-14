@@ -1,3 +1,3 @@
 [submodule "rosjava_gradle_subproject_myrobcon"]
 	path = rosjava_gradle_subproject_myrobcon
-	url = /home/eaw/catkin_ws/src/rosjava_catkin_package_myrobcon/rosjava_gradle_subproject_myrobcon
+	url = https://github.com/techniccontroller/MobRob_MyRobCon.git
