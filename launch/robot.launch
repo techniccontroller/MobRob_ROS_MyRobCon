@@ -1,0 +1,46 @@
+<launch>
+	<arg name="model" default="$(find myrobot_model)/urdf/mobrob_move.urdf"/>
+	<arg name="gui" default="true" />
+	<arg name="rvizconfig" default="$(find myrobot_model)/rviz/urdf.rviz" />
+
+	<!--<param name="use_gui" value="$(arg gui)"/>-->
+
+	
+
+	<machine name="station" address="localhost" env-loader="/opt/ros/kinetic/env.sh" default="true"/>  	
+	<machine name="mobrob" address="MOBROB" env-loader="/opt/ros/kinetic/robot_env.sh" user="ubuntu" password="mobrob123"/>
+	
+	<param name="robot_description" command="cat $(find myrobot_model)/urdf/mobrob_move.urdf" />
+	
+	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" machine="station"/>
+    	
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" machine="station"/>
+
+	<!--<node machine="mobrob" pkg="turtlesim" type="turtle_teleop_key" name="testnode"/>-->	
+
+  	
+	<node name="rplidarNode" pkg="rplidar_ros" type="rplidarNode" output="screen" machine="mobrob">
+		<param name="serial_port"         type="string" value="/dev/rplidar"/>
+		<param name="serial_baudrate"     type="int"    value="115200"/><!--A1/A2 -->
+		<!--param name="serial_baudrate"     type="int"    value="256000"--><!--A3 -->
+		<param name="frame_id"            type="string" value="laser"/>
+		<param name="inverted"            type="bool"   value="false"/>
+		<param name="angle_compensate"    type="bool"   value="true"/>
+	</node>
+
+	<node name="arduinonode" pkg="rosserial_python" type="serial_node.py" machine="mobrob">
+		<param name="port" value="/dev/arduino" />
+	</node>
+
+	<!--<node name="cameranode" pkg="usb_cam" type="usb_cam_node" machine="mobrob">
+		<param name="video_device" value="/dev/video0" />
+		<param name="pixel_format" value="yuyv" />
+		<remap from="image" to="usb_cam/image_raw"/>
+	</node>-->
+
+	<node name="attinynode" pkg="myrobot_model" type="attiny_server.py" machine="mobrob"/>
+
+
+	<node name="odom_converter" pkg="myrobot_model" type="odom_converter" machine="station"/>
+	
+</launch>

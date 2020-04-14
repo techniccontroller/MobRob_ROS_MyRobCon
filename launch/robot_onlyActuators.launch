@@ -1,0 +1,29 @@
+<launch>
+	<arg name="model" default="$(find myrobot_model)/urdf/mobrob_move.urdf"/>
+	<arg name="gui" default="true" />
+	<arg name="rvizconfig" default="$(find myrobot_model)/rviz/urdf.rviz" />
+
+	<!--<param name="use_gui" value="$(arg gui)"/>-->
+
+	
+
+	<machine name="station" address="localhost" env-loader="/opt/ros/kinetic/env.sh" default="true"/>  	
+	<machine name="mobrob" address="MOBROB" env-loader="/opt/ros/kinetic/robot_env.sh" user="ubuntu" password="mobrob123"/>
+	
+	<param name="robot_description" command="cat $(find myrobot_model)/urdf/mobrob_move.urdf" />
+	
+	
+
+
+	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" machine="station"/>
+    	
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" machine="station"/>
+
+	<node name="arduinonode" pkg="rosserial_python" type="serial_node.py" machine="mobrob">
+		<param name="port" value="/dev/arduino" />
+	</node>
+
+	
+	<node name="odom_converter" pkg="myrobot_model" type="odom_converter" machine="station"/>
+	
+</launch>
